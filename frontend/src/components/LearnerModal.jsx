@@ -42,7 +42,7 @@ function FullName({ learner }) {
 }
 
 function InfoGrid({ data, editable, onChange }) {
-  const render = (label, value, selectOptions) => (
+  const render = (key, label, value, selectOptions) => (
     <label className="block">
       <span className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-[#b8b8b8]">
         {label}
@@ -73,13 +73,13 @@ function InfoGrid({ data, editable, onChange }) {
 
   return (
     <div className="grid grid-cols-2 gap-x-4 gap-y-4">
-      {infoFields.map(([key, label]) => render(label, data[key]))}
+      {infoFields.map(([key, label]) => render(key, label, data[key]))}
       {formationFields.map(([key, label]) =>
         key === 'statut'
-          ? render(label, data[key], ['En attente', 'En cours', 'Terminé'])
+          ? render(key, label, data[key], ['En attente', 'En cours', 'Terminé'])
           : key === 'formation'
-            ? render(label, data[key], ['Dev', 'Data', 'Securite'])
-            : render(label, data[key])
+            ? render(key, label, data[key], ['Dev', 'Data', 'Securite'])
+            : render(key, label, data[key])
       )}
     </div>
   )

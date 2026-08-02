@@ -22,7 +22,7 @@ app.use("/api/admins", AdminRoutes);
 app.use("/api", LearnerRoutes);
 
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 7000;
 
 
 const connecte = async () => {
