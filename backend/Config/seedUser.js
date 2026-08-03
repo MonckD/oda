@@ -1,21 +1,22 @@
-import Admin from "../Models/Admin.js";
+import User from "../Models/User.js";
 import { connection } from "./db.js";
 
-export const creerAdminSiAbsent = async () => {
+export const creerUserSiAbsent = async () => {
   const nom = process.env.ADMIN_NOM || "Admin";
   const prenom = process.env.ADMIN_PRENOM || "Principal";
   const email = process.env.ADMIN_EMAIL || "admin@odc.ci";
   const motDePasse = process.env.ADMIN_MOT_DE_PASSE || "secret123";
+  const role = process.env.ADMIN_ROLE || "admin";
 
   await connection();
 
-  const [admin, cree] = await Admin.findOrCreate({
+  const [user, cree] = await User.findOrCreate({
     where: { email },
-    defaults: { nom, prenom, email, motDePasse },
+    defaults: { nom, prenom, email, motDePasse, role },
   });
 
-  console.log(cree ? "Admin créé :" : "Admin déjà existant :", admin.email);
+  console.log(cree ? "Utilisateur créé :" : "Utilisateur déjà existant :", user.email);
   console.log("Connexion ->", email, "/", motDePasse);
 
-  return { admin, cree };
+  return { user, cree };
 };

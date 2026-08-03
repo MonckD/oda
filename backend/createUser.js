@@ -1,6 +1,6 @@
-import { creerAdminSiAbsent } from "./Config/seedAdmin.js";
+import { creerUserSiAbsent } from "./Config/seedUser.js";
 
-creerAdminSiAbsent()
+creerUserSiAbsent()
   .then(() => process.exit(0))
   .catch((error) => {
     console.error("Erreur :", error.message);

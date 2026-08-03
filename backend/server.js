@@ -2,9 +2,9 @@ import express from "express";
 import dotenv from "dotenv";
 import { connection } from "./Config/db.js";
 import { sequelize } from "./Config/db.js";
-import AdminRoutes from "./Routes/AdminRoutes.js";
+import UserRoutes from "./Routes/UserRoutes.js";
 import LearnerRoutes from "./Routes/learnerRoutes.js";
-import { creerAdminSiAbsent } from "./Config/seedAdmin.js";
+import { creerUserSiAbsent } from "./Config/seedUser.js";
 
 dotenv.config();
 
@@ -19,7 +19,7 @@ app.get("/", (req, res) => {
     });
 });
 
-app.use("/api/admins", AdminRoutes);
+app.use("/api/users", UserRoutes);
 app.use("/api", LearnerRoutes);
 
 
@@ -32,7 +32,7 @@ const connecte = async () => {
         await connection();
         await sequelize.sync();
 
-        await creerAdminSiAbsent();
+        await creerUserSiAbsent();
 
         app.listen(port, () => {
             console.log(`Serveur connecté sur le port: ${port}`);

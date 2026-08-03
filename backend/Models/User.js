@@ -2,8 +2,8 @@ import { DataTypes } from "sequelize";
 import bcrypt from "bcryptjs";
 import { sequelize } from "../Config/db.js";
 
-const Admin = sequelize.define(
-  "Admin",
+const User = sequelize.define(
+  "User",
   {
     id: {
       type: DataTypes.INTEGER.UNSIGNED,
@@ -46,31 +46,36 @@ const Admin = sequelize.define(
         },
       },
     },
+    role: {
+      type: DataTypes.ENUM("admin", "user"),
+      allowNull: false,
+      defaultValue: "user",
+    },
   },
   {
-    tableName: "admins",
+    tableName: "users",
     timestamps: true,
     hooks: {
-      beforeCreate: async (admin) => {
-        admin.motDePasse = await bcrypt.hash(admin.motDePasse, 10);
+      beforeCreate: async (user) => {
+        user.motDePasse = await bcrypt.hash(user.motDePasse, 10);
       },
-      beforeUpdate: async (admin) => {
-        if (admin.changed("motDePasse")) {
-          admin.motDePasse = await bcrypt.hash(admin.motDePasse, 10);
+      beforeUpdate: async (user) => {
+        if (user.changed("motDePasse")) {
+          user.motDePasse = await bcrypt.hash(user.motDePasse, 10);
         }
       },
     },
   }
 );
 
-Admin.prototype.toJSON = function () {
+User.prototype.toJSON = function () {
   const valeurs = { ...this.get() };
   delete valeurs.motDePasse;
   return valeurs;
 };
 
-Admin.prototype.verifierMotDePasse = function (motDePasse) {
+User.prototype.verifierMotDePasse = function (motDePasse) {
   return bcrypt.compare(motDePasse, this.motDePasse);
 };
 
-export default Admin;
+export default User;

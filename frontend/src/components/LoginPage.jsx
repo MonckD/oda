@@ -25,10 +25,11 @@ export default function LoginPage({ onLogin }) {
     setLoading(true)
     setApiError('')
     try {
-      const admin = await login(email, password)
+      const user = await login(email, password)
       onLogin({
-        name: `${admin.prenom} ${admin.nom}`.trim(),
-        email: admin.email,
+        name: `${user.prenom} ${user.nom}`.trim(),
+        email: user.email,
+        role: user.role,
       })
     } catch (err) {
       setApiError(err.message || 'Email ou mot de passe incorrect.')

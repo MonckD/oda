@@ -47,7 +47,7 @@ const fromApi = (l) => ({
 })
 
 export const login = async (email, motDePasse) => {
-  const data = await request('/admins/login', {
+  const data = await request('/users/login', {
     method: 'POST',
     body: JSON.stringify({ email, motDePasse }),
   })
