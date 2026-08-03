@@ -43,7 +43,7 @@ function FullName({ learner }) {
 const disabledFields = ['identifiant', 'date_inscription']
 function InfoGrid({ data, editable, onChange }) {
   const render = (key, label, value, selectOptions) => (
-    <label className="block">
+    <div className="block">
       <span className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-[#b8b8b8]">
         {label}
       </span>
@@ -76,25 +76,24 @@ function InfoGrid({ data, editable, onChange }) {
       ) : (
         <span className="block text-[13px] font-bold">{value || '—'}</span>
       )}
-    </label>
+    </div>
   )
 
   return (
-   <div className="grid grid-cols-2 gap-x-4 gap-y-4">
-  {infoFields.map(([key, label]) =>
-    key === 'sexe'
-      ? render(key, label, data[key], ['Masculin', 'Féminin'])
-      : render(key, label, data[key])
-  )}
-
-  {formationFields.map(([key, label]) =>
-    key === 'statut'
-      ? render(key, label, data[key], ['En attente', 'En cours', 'Terminé'])
-      : key === 'formation'
-        ? render(key, label, data[key], ['Dev', 'Data', 'Securite', 'Autre']) 
-        : render(key, label, data[key])
-  )}
-</div>
+    <div className="grid grid-cols-2 gap-x-4 gap-y-4">
+      {infoFields.map(([key, label]) =>
+        key === 'sexe'
+          ? render(key, label, data[key], ['Homme', 'Femme'])
+          : render(key, label, data[key])
+      )}
+      {formationFields.map(([key, label]) =>
+        key === 'statut'
+          ? render(key, label, data[key], ['En attente', 'En cours', 'Terminé'])
+          : key === 'formation'
+            ? render(key, label, data[key], ['Dev', 'Data', 'Securite'])
+            : render(key, label, data[key])
+      )}
+    </div>
   )
 }
 
@@ -153,7 +152,10 @@ export default function LearnerModal({ learner, onClose, onSave, onDelete }) {
               Annuler
             </button>
             <button
-              onClick={() => onDelete(learner.id)}
+             onClick={() => {
+  onDelete(learner.id)
+  close() 
+}}
               className="flex-1 rounded-[10px] bg-red-600 py-2.5 font-heading font-semibold text-white transition hover:bg-red-700"
             >
               Supprimer définitivement

@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node backend/server.js",
     "dev": "nodemon backend/server.js",
-    "admin:create": "node backend/createAdmin.js"
+    "user:create": "node backend/createUser.js"
   },
   "author": "",
   "license": "ISC",

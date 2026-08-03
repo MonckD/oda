@@ -1,29 +1,22 @@
-# DEBUT DE CONTENEURISATION
-# ==============================================
-# Ce fichier dit à Docker quels fichiers NE PAS
-# copier dans les images (secrets, node_modules, git...)
-# ==============================================
-
 .git
 .gitignore
 
-# Variables d'environnement (secrets) — jamais dans une image
+
 .env
 .env.local
 .env.*.local
 
-# Dépendances — installées DANS le conteneur
+
 node_modules/
 **/node_modules/
 
-# Sorties de build — reconstruites DANS le conteneur
+
 dist/
 **/dist/
 
-# Fichiers divers
+
 *.log
 npm-debug.log*
 .DS_Store
 coverage/
 
-# FIN DE CONTENEURISATION

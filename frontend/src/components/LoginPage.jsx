@@ -16,7 +16,7 @@ setLoading(true)
 
 
 try {
-  const res = await fetch('http://localhost:7000/api/admins/login', {
+  const res = await fetch('http://localhost:7000/api/users/login', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -33,8 +33,24 @@ try {
     throw new Error(data.message)
   }
 
- 
-  localStorage.setItem('admin', JSON.stringify(data.data))
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    if (!validate()) return
+    setLoading(true)
+    setApiError('')
+    try {
+      const user = await login(email, password)
+      onLogin({
+        name: `${user.prenom} ${user.nom}`.trim(),
+        email: user.email,
+        role: user.role,
+      })
+    } catch (err) {
+      setApiError(err.message || 'Email ou mot de passe incorrect.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   console.log('Connexion réussie:', data)
 
