@@ -77,7 +77,7 @@ export default function CreateLearner({ onCreated, onDone }) {
         >
           <SectionLabel>Informations personnelles</SectionLabel>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="sm:col-span-2">
+           {/* <div className="sm:col-span-2">
               <Field label="Identifiant">
                 <input
                   value={form.identifiant}
@@ -86,7 +86,7 @@ export default function CreateLearner({ onCreated, onDone }) {
                   className={inputClass}
                 />
               </Field>
-            </div>
+            </div>*/}
             <Field label="Nom">
               <input value={form.nom} onChange={set('nom')} required className={inputClass} />
             </Field>

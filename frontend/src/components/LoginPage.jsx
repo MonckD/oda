@@ -55,15 +55,7 @@ export default function LoginPage({ onLogin }) {
             de l'Orange Digital Center.
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white font-heading font-bold text-primary">
-            AD
-          </div>
-          <div>
-            <div className="font-medium text-white">Aminata Diallo</div>
-            <div className="text-sm text-white/75">Responsable de formation</div>
-          </div>
-        </div>
+
       </div>
 
       <div className="flex flex-1 items-center justify-center bg-white p-6">

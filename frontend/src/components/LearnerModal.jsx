@@ -166,7 +166,7 @@ export default function LearnerModal({ learner, onClose, onSave, onDelete }) {
           </div>
           <div className="min-w-0 flex-1">
             <div className="truncate font-heading font-bold">{FullName({ learner })}</div>
-            <div className="text-xs text-[#888]">
+            <div className="text-xs text-[#888] select-none cursor-not-allowed">
               {learner.identifiant} · {learner.email}
             </div>
           </div>

@@ -3,7 +3,7 @@ import { connection } from "./Config/db.js";
 
 const NOM = process.env.ADMIN_NOM || "Admin";
 const PRENOM = process.env.ADMIN_PRENOM || "Principal";
-const EMAIL = process.env.ADMIN_EMAIL || "admin@odc.example";
+const EMAIL = process.env.ADMIN_EMAIL || "admin@odc.ci";
 const MOT_DE_PASSE = process.env.ADMIN_MOT_DE_PASSE || "secret123";
 
 const creerAdmin = async () => {
