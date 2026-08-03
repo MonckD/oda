@@ -43,7 +43,7 @@ function FullName({ learner }) {
 
 function InfoGrid({ data, editable, onChange }) {
   const render = (key, label, value, selectOptions) => (
-    <label className="block">
+    <div className="block">
       <span className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-[#b8b8b8]">
         {label}
       </span>
@@ -68,12 +68,16 @@ function InfoGrid({ data, editable, onChange }) {
       ) : (
         <span className="block text-[13px] font-bold">{value || '—'}</span>
       )}
-    </label>
+    </div>
   )
 
   return (
     <div className="grid grid-cols-2 gap-x-4 gap-y-4">
-      {infoFields.map(([key, label]) => render(key, label, data[key]))}
+      {infoFields.map(([key, label]) =>
+        key === 'sexe'
+          ? render(key, label, data[key], ['Homme', 'Femme'])
+          : render(key, label, data[key])
+      )}
       {formationFields.map(([key, label]) =>
         key === 'statut'
           ? render(key, label, data[key], ['En attente', 'En cours', 'Terminé'])
