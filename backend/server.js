@@ -4,6 +4,7 @@ import { connection } from "./Config/db.js";
 import { sequelize } from "./Config/db.js";
 import AdminRoutes from "./Routes/AdminRoutes.js";
 import LearnerRoutes from "./Routes/learnerRoutes.js";
+import { creerAdminSiAbsent } from "./Config/seedAdmin.js";
 
 dotenv.config();
 
@@ -30,6 +31,8 @@ const connecte = async () => {
 
         await connection();
         await sequelize.sync();
+
+        await creerAdminSiAbsent();
 
         app.listen(port, () => {
             console.log(`Serveur connecté sur le port: ${port}`);
