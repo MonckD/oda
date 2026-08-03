@@ -18,14 +18,14 @@ const infoFields = [
   ['age', 'Âge'],
   ['ville', 'Ville'],
   ['sexe', 'Sexe'],
-  ['niveauEtude', "Niveau d'étude"],
+  ['niveau_etude', "Niveau d'étude"],
 ]
 
 const formationFields = [
   ['formation', 'Formation'],
   ['cohorte', 'Cohorte'],
   ['statut', 'Statut'],
-  ['dateInscription', "Date d'inscription"],
+  ['date_inscription', "Date d'inscription"],
 ]
 
 function initials(name) {
@@ -40,7 +40,7 @@ function initials(name) {
 function FullName({ learner }) {
   return `${learner.prenom} ${learner.nom}`
 }
-
+const disabledFields = ['identifiant', 'date_inscription']
 function InfoGrid({ data, editable, onChange }) {
   const render = (key, label, value, selectOptions) => (
     <label className="block">
@@ -50,20 +50,28 @@ function InfoGrid({ data, editable, onChange }) {
       {editable ? (
         selectOptions ? (
           <select
-            value={value || ''}
-            onChange={(e) => onChange(key, e.target.value)}
-            className={inputClass}
+            disabled={disabledFields.includes(key)}
+  className={`${inputClass} ${
+    disabledFields.includes(key)
+      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+      : ''
+  }`}
           >
             {selectOptions.map((o) => (
               <option key={o}>{o}</option>
             ))}
           </select>
         ) : (
-          <input
-            value={value || ''}
-            onChange={(e) => onChange(key, e.target.value)}
-            className={inputClass}
-          />
+         <input
+  value={value || ''}
+  onChange={(e) => onChange(key, e.target.value)}
+  disabled={disabledFields.includes(key)}
+  className={`${inputClass} ${
+    disabledFields.includes(key)
+      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+      : ''
+  }`}
+/>
         )
       ) : (
         <span className="block text-[13px] font-bold">{value || '—'}</span>
@@ -72,16 +80,21 @@ function InfoGrid({ data, editable, onChange }) {
   )
 
   return (
-    <div className="grid grid-cols-2 gap-x-4 gap-y-4">
-      {infoFields.map(([key, label]) => render(key, label, data[key]))}
-      {formationFields.map(([key, label]) =>
-        key === 'statut'
-          ? render(key, label, data[key], ['En attente', 'En cours', 'Terminé'])
-          : key === 'formation'
-            ? render(key, label, data[key], ['Dev', 'Data', 'Securite'])
-            : render(key, label, data[key])
-      )}
-    </div>
+   <div className="grid grid-cols-2 gap-x-4 gap-y-4">
+  {infoFields.map(([key, label]) =>
+    key === 'sexe'
+      ? render(key, label, data[key], ['Masculin', 'Féminin'])
+      : render(key, label, data[key])
+  )}
+
+  {formationFields.map(([key, label]) =>
+    key === 'statut'
+      ? render(key, label, data[key], ['En attente', 'En cours', 'Terminé'])
+      : key === 'formation'
+        ? render(key, label, data[key], ['Dev', 'Data', 'Securite', 'Autre']) 
+        : render(key, label, data[key])
+  )}
+</div>
   )
 }
 
@@ -189,7 +202,7 @@ export default function LearnerModal({ learner, onClose, onSave, onDelete }) {
                 mode === 'view' ? 'bg-primary text-white' : 'bg-light text-ink hover:bg-line'
               }`}
             >
-              👁 Consulter
+             Consulter
             </button>
             <button
               onClick={() => setMode('edit')}
@@ -197,7 +210,7 @@ export default function LearnerModal({ learner, onClose, onSave, onDelete }) {
                 mode === 'edit' ? 'bg-primary text-white' : 'bg-light text-ink hover:bg-line'
               }`}
             >
-              ✏️ Modifier
+              Modifier
             </button>
           </div>
         </div>
@@ -231,7 +244,14 @@ export default function LearnerModal({ learner, onClose, onSave, onDelete }) {
             </button>
             {mode === 'edit' && (
               <button
-                onClick={() => onSave({ ...form, id: learner.id })}
+               onClick={async () => {
+  try {
+    await onSave({ ...form, id: learner.id })
+    onClose()
+  } catch (e) {
+    console.error(e)
+  }
+}}
                 className="rounded-[10px] bg-primary px-5 py-2.5 font-heading font-semibold text-white transition hover:bg-primary-dark"
               >
                 Enregistrer

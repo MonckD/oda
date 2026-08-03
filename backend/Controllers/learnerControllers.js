@@ -33,6 +33,19 @@ const generateUniqueId = async (Model) => {
 export const createLearner = async (req, res) => {
     console.log("Données reçues :", req.body);
     try {
+            const existingLearner = await Learner.findOne({
+      where: {
+        email: req.body.email,
+        formation: req.body.formation,
+        cohorte: req.body.cohorte
+      }
+    })
+
+    if (existingLearner) {
+      return res.status(400).json({
+        message: "Cet apprenant est déjà inscrit pour cette formation et cohorte"
+      })
+    }
 
         const identifiant = await generateUniqueId(Learner);
         const learner = await Learner.create({
@@ -47,7 +60,7 @@ export const createLearner = async (req, res) => {
             formation: req.body.formation,
             cohorte: req.body.cohorte,
             statut: req.body.statut,
-            identifiant: req.body.identifiant || identifiant
+            identifiant: identifiant
 
 
         });
@@ -102,18 +115,11 @@ export const updateLearner = async (req, res) => {
     try {
         const learner = await Learner.findByPk(req.params.id);
         if (!learner) {
-            res.status(404).json({
+            return res.status(404).json({
                 message: "Learner n'ont trouver"
             });
         }
-        await Learner.update(
-            req.body, {
-            where: {
-                id: req.params.id
-            }
-
-        }
-        )
+       await learner.update(req.body);
         const updateLearner = await Learner.findByPk(req.params.id);
         res.status(200).json(updateLearner);
 
@@ -127,7 +133,7 @@ export const deleteLearner = async (req, res) => {
     try {
         const learner = await Learner.findByPk(req.params.id);
         if (!learner) {
-            res.status(404).json({
+            return res.status(404).json({
                 message: "Learner n'ont trouver"
             });
         }

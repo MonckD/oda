@@ -1,4 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
+import LearnerModal from './LearnerModal'
+import { useNavigate, Outlet } from "react-router-dom"
 
 const statCards = [
   { label: 'Total', key: 'total', color: 'bg-primary' },
@@ -19,8 +21,56 @@ const statutColors = {
   'Terminé': 'bg-blue-50 text-blue-600',
 }
 
-export default function LearnerList({ learners, onOpenLearner }) {
+export default function LearnerList() {
+  const [learners, setLearners] = useState([])
   const [search, setSearch] = useState('')
+  const [loading, setLoading] = useState(true)
+const navigate = useNavigate()
+
+ 
+  useEffect(() => {
+    const fetchLearners = async () => {
+      try {
+        const res = await fetch('http://localhost:7000/api/learners')
+        const data = await res.json()
+       setLearners(data.learner || [])
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchLearners()
+  }, [])
+
+const onSave = async (data) => {
+  const res = await fetch(`http://localhost:7000/api/${data.id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  })
+
+  if (!res.ok) throw new Error('Erreur modification')
+
+ 
+  const updated = await res.json()
+  setLearners((prev) =>
+    prev.map((l) => ((l.id || l._id) === (updated.id || updated._id) ? updated : l))
+  )
+}
+
+const onDelete = async (id) => {
+  const res = await fetch(`http://localhost:7000/api/${id}`, {
+    method: 'DELETE',
+  })
+
+  if (!res.ok) throw new Error('Erreur suppression')
+
+  
+  setLearners((prev) => prev.filter((l) => l.id !== id))
+ 
+}
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase()
@@ -42,7 +92,16 @@ export default function LearnerList({ learners, onOpenLearner }) {
     }
   }, [learners])
 
+ 
+
+
+ 
+  if (loading) {
+    return <p className="p-4">Chargement...</p>
+  }
+
   return (
+    <>
     <div className="flex h-full flex-col">
       <div className="shrink-0">
         <h1 className="font-heading text-[22px] font-bold">Liste des apprenants</h1>
@@ -58,14 +117,7 @@ export default function LearnerList({ learners, onOpenLearner }) {
               className="flex items-center gap-4 rounded-2xl border border-line p-4"
             >
               <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${card.color}`}>
-                <svg
-                  width="22"
-                  height="22"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="white"
-                  strokeWidth="2"
-                >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
                   <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75M13 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z" />
                 </svg>
               </div>
@@ -118,19 +170,12 @@ export default function LearnerList({ learners, onOpenLearner }) {
           </thead>
           <tbody>
             {filtered.map((l) => (
-              <tr
-                key={l.id}
-                className="border-t border-line transition hover:bg-[#fffbf8]"
-              >
+              <tr key={l.id || l._id}className="border-t border-line transition hover:bg-[#fffbf8]">
                 <td className="px-4 py-3 font-mono text-[13px] text-[#888]">{l.identifiant}</td>
                 <td className="px-4 py-3 font-semibold">{l.nom}</td>
                 <td className="px-4 py-3">{l.prenom}</td>
                 <td className="px-4 py-3">
-                  <span
-                    className={`rounded-md px-2.5 py-1 text-xs font-semibold ${
-                      formationColors[l.formation] || 'bg-gray-100 text-gray-600'
-                    }`}
-                  >
+                  <span className={`rounded-md px-2.5 py-1 text-xs font-semibold ${formationColors[l.formation] || 'bg-gray-100 text-gray-600'}`}>
                     {l.formation}
                   </span>
                 </td>
@@ -140,35 +185,21 @@ export default function LearnerList({ learners, onOpenLearner }) {
                   </span>
                 </td>
                 <td className="px-4 py-3">
-                  <span
-                    className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${
-                      statutColors[l.statut] || 'bg-gray-100 text-gray-600'
-                    }`}
-                  >
+                  <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${statutColors[l.statut] || 'bg-gray-100 text-gray-600'}`}>
                     {l.statut}
                   </span>
                 </td>
                 <td className="px-4 py-3">
                   <button
-                    onClick={() => onOpenLearner(l)}
+                    onClick={() => navigate(`/dashboard/list/${l.id}`)}
                     className="inline-flex items-center gap-2 rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-primary-dark"
                   >
-                    <svg
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" />
-                      <circle cx="12" cy="12" r="3" />
-                    </svg>
                     Voir
                   </button>
                 </td>
               </tr>
             ))}
+
             {filtered.length === 0 && (
               <tr>
                 <td colSpan="7" className="px-4 py-10 text-center text-[#888]">
@@ -180,5 +211,10 @@ export default function LearnerList({ learners, onOpenLearner }) {
         </table>
       </div>
     </div>
+    
+    
+<Outlet context={{ onSave, onDelete }} />
+  </>
   )
+  
 }

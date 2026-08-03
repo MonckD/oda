@@ -9,7 +9,7 @@ const emptyForm = {
   age: '',
   ville: '',
   sexe: '',
-  niveauEtude: '',
+  niveau_etude: '',
   formation: '',
   cohorte: '8',
   statut: 'En cours',
@@ -47,19 +47,52 @@ export default function CreateLearner({ onCreated, onDone }) {
     setForm(emptyForm)
     setSuccess(false)
   }
+  const [error, setError] = useState('')
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    const identifiant =
-      form.identifiant.trim() ||
-      'ODC-' + String(Math.floor(Math.random() * 900) + 100)
-    await onCreated({ ...form, identifiant })
+const handleSubmit = async (e) => {
+  e.preventDefault()
+
+  try {
+    setError('')
+    setSuccess(false)
+
+    const res = await fetch('http://localhost:7000/api/learner', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        nom: form.nom,
+        prenom: form.prenom,
+        email: form.email,
+        telephone: form.telephone,
+        sexe: form.sexe,
+        age: form.age,
+        ville: form.ville,
+        niveau_etude: form.niveauEtude,
+        formation: form.formation,
+        cohorte: form.cohorte,
+        statut: form.statut,
+      }),
+    })
+    const data = await res.json()
+
+    if (!res.ok) {
+      throw new Error(data.message || 'Erreur lors de la création')
+    }
+
     setSuccess(true)
+
     setTimeout(() => {
       reset()
-      onDone()
+      if (onDone) onDone()
     }, 1400)
+
+  } catch (err) {
+    setError(err.message )
+    console.log(err)
   }
+}
 
   return (
     <div className="flex h-full flex-col">
@@ -77,16 +110,7 @@ export default function CreateLearner({ onCreated, onDone }) {
         >
           <SectionLabel>Informations personnelles</SectionLabel>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-           {/* <div className="sm:col-span-2">
-              <Field label="Identifiant">
-                <input
-                  value={form.identifiant}
-                  onChange={set('identifiant')}
-                  placeholder="ODC-001 (laisser vide = auto)"
-                  className={inputClass}
-                />
-              </Field>
-            </div>*/}
+           {}
             <Field label="Nom">
               <input value={form.nom} onChange={set('nom')} required className={inputClass} />
             </Field>
@@ -169,6 +193,11 @@ export default function CreateLearner({ onCreated, onDone }) {
               </Field>
             </div>
           </div>
+          {error && (
+  <div className="mb-4 text-sm text-red-500 font-semibold">
+    {error}
+  </div>
+)}
 
           <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row">
             <button

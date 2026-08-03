@@ -24,7 +24,6 @@ const learner = sequelize.define("learner", {
     email: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
         validate: {
             isEmail: true,
         },
