@@ -6,12 +6,12 @@ services:
     container_name: oda_db
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: oda_db           # base créée automatiquement
-      MYSQL_USER: odc_user             # utilisateur créé automatiquement
-      MYSQL_PASSWORD: odc_password     # ⚠ changez ce mot de passe
-      MYSQL_ROOT_PASSWORD: odc_root_password  # ⚠ changez aussi celui-ci
+      MYSQL_DATABASE: oda_db         
+      MYSQL_USER: odc_user            
+      MYSQL_PASSWORD: odc_password     
+      MYSQL_ROOT_PASSWORD: odc_root_password  
     volumes:
-      - db_data:/var/lib/mysql          # les données BD survivent au redémarrage
+      - db_data:/var/lib/mysql          
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
@@ -25,7 +25,7 @@ services:
     container_name: oda_backend
     restart: unless-stopped
     environment:
-      DB_HOST: db                 # nom du service = nom d'hôte dans Docker
+      DB_HOST: db                
       DB_PORT: "3306"
       DB_NAME: oda_db
       DB_USER: odc_user
@@ -38,9 +38,9 @@ services:
       ADMIN_MOT_DE_PASSE: secret123
     depends_on:
       db:
-        condition: service_healthy  # ne démarre qu'une fois MySQL prêt
+        condition: service_healthy  
     ports:
-      - "3000:3000"                 # API accessible : http://localhost:3000
+      - "3000:3000"                 
 
   frontend:
     build:
@@ -51,10 +51,7 @@ services:
     depends_on:
       - backend
     ports:
-      - "5173:80"                   # site web : http://localhost:5173
+      - "5173:80"                  
 
-# Volume nommé : conservé même après docker compose down
 volumes:
   db_data:
-
-# FIN DE CONTENEURISATION
