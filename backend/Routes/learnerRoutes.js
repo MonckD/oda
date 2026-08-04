@@ -6,8 +6,8 @@ const router = express.Router();
 router.post("/learner",createLearner);
 router.get("/learners",readLearner);
 router.get("/learner/:id",getByIdLearner);
-router.put("/:id",updateLearner);
-router.delete("/:id",deleteLearner);
+router.put("/learner/:id",updateLearner);
+router.delete("/learner/:id",deleteLearner);
 router.get("/search", searchLearner);
 
 

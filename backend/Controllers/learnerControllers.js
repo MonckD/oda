@@ -1,5 +1,5 @@
 import Learner from "../Models/learnerModels.js";
-import { Op } from "sequelize";
+import { Op, fn, col, where } from "sequelize";
 
 
 function generateId() {
@@ -150,14 +150,14 @@ export const searchLearner = async (req, res) => {
         }
 
       const learner = await Learner.findAll({
-  where: {
-    [Op.or]: [
-      nom ? { nom: { [Op.like]: `%${nom}%` } } : null,
-      prenom ? { prenom: { [Op.like]: `%${prenom}%` } } : null,
-      email ? { email: { [Op.like]: `%${email}%` } } : null,
-    ].filter(Boolean)
-  }
-});
+   where: {
+                [Op.or]: [
+                    nom ? where(fn('LOWER', col('nom')), { [Op.like]: `%${nom.toLowerCase()}%` }) : null,
+                    prenom ? where(fn('LOWER', col('prenom')), { [Op.like]: `%${prenom.toLowerCase()}%` }) : null,
+                    email ? where(fn('LOWER', col('email')), { [Op.like]: `%${email.toLowerCase()}%` }) : null,
+                ].filter(Boolean)
+            }
+        });
 
       if (learner.length === 0) {
   return res.status(404).json({

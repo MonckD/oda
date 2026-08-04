@@ -56,7 +56,7 @@ const handleSubmit = async (e) => {
     setError('')
     setSuccess(false)
 
-    const res = await fetch('http://localhost:7000/api/learner', {
+    const res = await fetch('http://localhost:3000/api/learner', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

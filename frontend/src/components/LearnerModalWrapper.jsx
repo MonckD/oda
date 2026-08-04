@@ -1,16 +1,32 @@
-import { useParams, useNavigate, useOutletContext } from "react-router-dom"
+import { useParams, useNavigate, useOutletContext, useSearchParams } from "react-router-dom"
 import { useEffect, useState } from "react"
 import LearnerModal from "./LearnerModal"
 
 export default function LearnerModalWrapper() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { onSave, onDelete } = useOutletContext() // ✅ ICI
+  const { onSave, onDelete } = useOutletContext()
+  const [searchParams, setSearchParams] = useSearchParams()
 
   const [learner, setLearner] = useState(null)
 
+  const rawMode = searchParams.get('mode')
+  const mode = rawMode === 'edit' || rawMode === 'delete' ? rawMode : 'view'
+
+  const setMode = (newMode) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev)
+      if (newMode === 'view') {
+        next.delete('mode')
+      } else {
+        next.set('mode', newMode)
+      }
+      return next
+    })
+  }
+
   useEffect(() => {
-    fetch(`http://localhost:7000/api/learner/${id}`)
+    fetch(`http://localhost:3000/api/learner/${id}`)
       .then(res => res.json())
       .then(data => {
         setLearner(data)
@@ -26,9 +42,11 @@ export default function LearnerModalWrapper() {
       ) : (
         <LearnerModal
           learner={learner}
+          mode={mode}
+          setMode={setMode}
           onClose={() => navigate("/dashboard/list")}
-          onSave={onSave}     
-          onDelete={onDelete} 
+          onSave={onSave}
+          onDelete={onDelete}
         />
       )}
     </div>

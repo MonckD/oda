@@ -28,6 +28,19 @@ const formationFields = [
   ['date_inscription', "Date d'inscription"],
 ]
 
+function formatDate(dateString) {
+  if (!dateString) return '—'
+
+  const date = new Date(dateString)
+
+  return date.toLocaleString('fr-FR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
 function initials(name) {
   return name
     .split(' ')
@@ -43,7 +56,7 @@ function FullName({ learner }) {
 const disabledFields = ['identifiant', 'date_inscription']
 function InfoGrid({ data, editable, onChange }) {
   const render = (key, label, value, selectOptions) => (
-    <div className="block">
+    <div key={key} className="block">
       <span className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-[#b8b8b8]">
         {label}
       </span>
@@ -51,30 +64,36 @@ function InfoGrid({ data, editable, onChange }) {
         selectOptions ? (
           <select
             disabled={disabledFields.includes(key)}
-  className={`${inputClass} ${
-    disabledFields.includes(key)
-      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-      : ''
-  }`}
+            value={value || ''}
+            onChange={(e) => onChange(key, e.target.value)}
+            className={`${inputClass} ${
+              disabledFields.includes(key)
+                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                : ''
+            }`}
           >
             {selectOptions.map((o) => (
               <option key={o}>{o}</option>
             ))}
           </select>
         ) : (
-         <input
-  value={value || ''}
-  onChange={(e) => onChange(key, e.target.value)}
-  disabled={disabledFields.includes(key)}
-  className={`${inputClass} ${
-    disabledFields.includes(key)
-      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-      : ''
-  }`}
-/>
+          <input
+            value={key === 'date_inscription'
+    ? formatDate(value)
+    : value || ''}
+            onChange={(e) => onChange(key, e.target.value)}
+            disabled={disabledFields.includes(key)}
+            className={`${inputClass} ${
+              disabledFields.includes(key)
+                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                : ''
+            }`}
+          />
         )
       ) : (
-        <span className="block text-[13px] font-bold">{value || '—'}</span>
+      <span className="block text-[13px] font-bold">
+  {key === 'date_inscription' ? formatDate(value) : value || '—'}
+</span>
       )}
     </div>
   )
@@ -97,9 +116,8 @@ function InfoGrid({ data, editable, onChange }) {
   )
 }
 
-export default function LearnerModal({ learner, onClose, onSave, onDelete }) {
-  const [mode, setMode] = useState('view')
-  const [confirm, setConfirm] = useState(false)
+
+export default function LearnerModal({ learner, mode, setMode, onClose, onSave, onDelete }) {
   const [form, setForm] = useState({ ...learner })
 
   useEffect(() => {
@@ -110,16 +128,21 @@ export default function LearnerModal({ learner, onClose, onSave, onDelete }) {
     return () => window.removeEventListener('keydown', onKey)
   }, [onClose])
 
+  
+  useEffect(() => {
+    setForm({ ...learner })
+  }, [learner])
+
   const changeField = (key, value) => {
     setForm({ ...form, [key]: value })
   }
 
   const close = () => {
-    setMode('view')
-    setConfirm(false)
     setForm({ ...learner })
     onClose()
   }
+
+  const confirm = mode === 'delete'
 
   if (confirm) {
     return (
@@ -146,16 +169,16 @@ export default function LearnerModal({ learner, onClose, onSave, onDelete }) {
           </p>
           <div className="mt-6 flex gap-3">
             <button
-              onClick={close}
+              onClick={() => setMode('view')}
               className="flex-1 rounded-[10px] bg-light py-2.5 font-heading font-semibold text-ink transition hover:bg-line"
             >
               Annuler
             </button>
             <button
-             onClick={() => {
-  onDelete(learner.id)
-  close() 
-}}
+              onClick={() => {
+                onDelete(learner.id)
+                close()
+              }}
               className="flex-1 rounded-[10px] bg-red-600 py-2.5 font-heading font-semibold text-white transition hover:bg-red-700"
             >
               Supprimer définitivement
@@ -204,7 +227,7 @@ export default function LearnerModal({ learner, onClose, onSave, onDelete }) {
                 mode === 'view' ? 'bg-primary text-white' : 'bg-light text-ink hover:bg-line'
               }`}
             >
-             Consulter
+              Consulter
             </button>
             <button
               onClick={() => setMode('edit')}
@@ -232,7 +255,7 @@ export default function LearnerModal({ learner, onClose, onSave, onDelete }) {
 
         <div className="flex shrink-0 items-center justify-between gap-3 border-t border-line p-5">
           <button
-            onClick={() => setConfirm(true)}
+            onClick={() => setMode('delete')}
             className="rounded-[10px] bg-[#FEF2F2] px-4 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-50"
           >
             Supprimer
@@ -246,14 +269,14 @@ export default function LearnerModal({ learner, onClose, onSave, onDelete }) {
             </button>
             {mode === 'edit' && (
               <button
-               onClick={async () => {
-  try {
-    await onSave({ ...form, id: learner.id })
-    onClose()
-  } catch (e) {
-    console.error(e)
-  }
-}}
+                onClick={async () => {
+                  try {
+                    await onSave({ ...form, id: learner.id })
+                    onClose()
+                  } catch (e) {
+                    console.error(e)
+                  }
+                }}
                 className="rounded-[10px] bg-primary px-5 py-2.5 font-heading font-semibold text-white transition hover:bg-primary-dark"
               >
                 Enregistrer

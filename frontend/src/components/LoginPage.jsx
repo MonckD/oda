@@ -15,7 +15,7 @@ const handleSubmit = async (e) => {
   setLoading(true)
 
   try {
-    const res = await fetch('http://localhost:7000/api/users/login', {
+    const res = await fetch('http://localhost:3000/api/users/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, motDePasse: password }),
