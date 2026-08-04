@@ -1,5 +1,5 @@
 import express from "express"
-import {createLearner,readLearner,getByIdLearner,updateLearner,deleteLearner,searchLearnerByNom} from "../Controllers/learnerControllers.js"
+import {createLearner,readLearner,getByIdLearner,updateLearner,deleteLearner,searchLearner} from "../Controllers/learnerControllers.js"
 
 const router = express.Router();
 
@@ -8,7 +8,7 @@ router.get("/learners",readLearner);
 router.get("/learner/:id",getByIdLearner);
 router.put("/:id",updateLearner);
 router.delete("/:id",deleteLearner);
-router.get("/search", searchLearnerByNom);
+router.get("/search", searchLearner);
 
 
 export default router;

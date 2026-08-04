@@ -10,60 +10,34 @@ const [loading, setLoading] = useState(false)
 const navigate = useNavigate()
 
 const handleSubmit = async (e) => {
-e.preventDefault()
-setError('')
-setLoading(true)
+  e.preventDefault()
+  setError('')
+  setLoading(true)
 
+  try {
+    const res = await fetch('http://localhost:7000/api/users/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, motDePasse: password }),
+    })
 
-try {
-  const res = await fetch('http://localhost:7000/api/users/login', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      email: email,
-      motDePasse: password,
-    }),
-  })
+    const data = await res.json()
 
-  const data = await res.json()
-
-  if (!res.ok) {
-    throw new Error(data.message)
-  }
-
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    if (!validate()) return
-    setLoading(true)
-    setApiError('')
-    try {
-      const user = await login(email, password)
-      onLogin({
-        name: `${user.prenom} ${user.nom}`.trim(),
-        email: user.email,
-        role: user.role,
-      })
-    } catch (err) {
-      setApiError(err.message || 'Email ou mot de passe incorrect.')
-    } finally {
-      setLoading(false)
+    if (!res.ok) {
+      throw new Error(data.message)
     }
+
+    console.log('Connexion réussie:', data)
+
+   
+    localStorage.setItem('admin', JSON.stringify(data.user || data))
+
+    navigate('/dashboard/list')
+  } catch (err) {
+    setError(err.message || 'Erreur lors de la connexion')
+  } finally {
+    setLoading(false)
   }
-
-  console.log('Connexion réussie:', data)
-
-
- navigate('/dashboard/list') 
-
-} catch (err) {
-  setError(err.message || 'Erreur lors de la connexion')
-} finally {
-  setLoading(false)
-}
-
-
 }
 
 return ( <div className="flex min-h-screen"> <div className="hidden flex-1 flex-col justify-between bg-primary p-10 lg:flex"> <div className="flex items-center gap-3"> <Logo /> <span className="font-heading text-lg font-semibold text-white">

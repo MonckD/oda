@@ -1,4 +1,6 @@
 import Learner from "../Models/learnerModels.js";
+import { Op } from "sequelize";
+
 
 function generateId() {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -33,19 +35,6 @@ const generateUniqueId = async (Model) => {
 export const createLearner = async (req, res) => {
     console.log("Données reçues :", req.body);
     try {
-            const existingLearner = await Learner.findOne({
-      where: {
-        email: req.body.email,
-        formation: req.body.formation,
-        cohorte: req.body.cohorte
-      }
-    })
-
-    if (existingLearner) {
-      return res.status(400).json({
-        message: "Cet apprenant est déjà inscrit pour cette formation et cohorte"
-      })
-    }
 
         const identifiant = await generateUniqueId(Learner);
         const learner = await Learner.create({
@@ -150,26 +139,31 @@ export const deleteLearner = async (req, res) => {
 
     }
 }
-export const searchLearnerByNom = async (req, res) => {
+export const searchLearner = async (req, res) => {
     try {
-        const { nom } = req.query;
+        const { nom, prenom, email } = req.query;
 
-
-        if (!nom) {
+        if (!nom && !prenom && !email) {
             return res.status(400).json({
-                message: "nom requis"
+                message: "Veuillez fournir au moins un critère de recherche"
             });
         }
 
-        const learner = await Learner.findOne({
-            where: { nom }
-        });
+      const learner = await Learner.findAll({
+  where: {
+    [Op.or]: [
+      nom ? { nom: { [Op.like]: `%${nom}%` } } : null,
+      prenom ? { prenom: { [Op.like]: `%${prenom}%` } } : null,
+      email ? { email: { [Op.like]: `%${email}%` } } : null,
+    ].filter(Boolean)
+  }
+});
 
-        if (!learner) {
-            return res.status(404).json({
-                message: "Aucun apprenant trouvé"
-            });
-        }
+      if (learner.length === 0) {
+  return res.status(404).json({
+    message: "Aucun apprenant trouvé"
+  });
+}
 
         res.status(200).json(learner);
 

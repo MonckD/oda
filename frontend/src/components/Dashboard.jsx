@@ -39,7 +39,7 @@ useEffect(() => {
   console.log("Apprenant créé")
 }
 
-
+ const location = useLocation() 
       
   return (
     <div className="min-h-screen bg-white">
